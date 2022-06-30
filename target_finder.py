@@ -7,36 +7,36 @@
 import os
 
 # import module
-import openpyxl
+import pandas as pd
 
 # load excel with its path
-wrkbk = openpyxl.load_workbook("AandT.xlsx", data_only=True, read_only=True)
-sh = wrkbk.active
+df = pd.read_excel("AandT.xlsx")
+
 PATH = "./References"
 
 if not os.path.exists(PATH):
     os.makedirs(PATH)
 
-INDEX_COL = 4
-WIDE_TARGET_COL = 9
-RP_BINDING_COL = 10
-TYPE_COL = 2
+INDEX_COL = "INDEX"
+WIDE_TARGET_COL = "Wide target sequence"
+RP_BINDING_COL = "RP binding site"
+TYPE_COL = "Nuc type"
 
 target_path = os.path.join(PATH, "Target_region.txt")
 
 with open(target_path, 'w') as target:
     # iterate through excel and display data
-    for i in range(2, sh.max_row + 1):
+    for i, row in df.iterrows():
         print("\n")
         print("Row ", i, " data :")
-        wide_target_sequence = sh.cell(row=i, column=WIDE_TARGET_COL)
-        rev_homology_sequence = sh.cell(row=i, column=RP_BINDING_COL)
+        wide_target_sequence = row[WIDE_TARGET_COL]
+        rev_homology_sequence = row[RP_BINDING_COL]
 
-        chunk = wide_target_sequence.value + rev_homology_sequence.value
+        chunk = wide_target_sequence + rev_homology_sequence
         print(chunk, end=" ")
 
-        type = sh.cell(row=i, column=TYPE_COL).value
-        category = sh.cell(row=i, column=INDEX_COL).value
+        type = row[TYPE_COL]
+        category = row[INDEX_COL]
 
         if type == "AsCas12f" and category == "AsFullMatch":
             UP_CONTEXT = 34
